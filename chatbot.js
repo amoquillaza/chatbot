@@ -2,21 +2,30 @@ const Bot = require('node-telegram-bot-api');
 const request = require('request');
 const token = require('./token');
 const token_w = require('./token_w');
+//logging
+const winston = require('winston')
+winston.level = 'info'
+//winston.log('info', 'Hello log files!', {someKey: 'some-value'})
+//error,warn,info,verbose,debug,silly
 
 const city_l = 'Lima'
 const city_p = 'Pucallpa'
+const city_i = 'Ica'
+
 var city = city_l
 const url_l = 'http://api.openweathermap.org/data/2.5/weather?q=Lima,pe&appid=' + token_w;
 const url_p = 'http://api.openweathermap.org/data/2.5/weather?q=Pucallpa,pe&appid' + token_w;
 const trigger_l = 'LIMA';
 const trigger_p = 'PUCALLPA';
+const trigger_i = 'ICA';
 const start = '/START';
 
 const bot = new Bot(token, {polling: true});
 
 const prepareData = (body) => {
  if(typeof JSON.parse(body).main === "undefined"){
-    return ' Tiempo no encontrado.\n Revise la ciudad ingresada.\n'; 
+    return ' Tiempo no encontrado.\n Revise la ciudad ingresada.\n';
+    winston.log('warn', 'Ciudad no encontrada', {'city': city});	
  } else {
    const weather = JSON.parse(body).weather[0].main;
    const weather_d = JSON.parse(body).weather[0].description;
@@ -33,6 +42,7 @@ const prepareData = (body) => {
                             + '.\n Humedad: ' + hume 
 							+ '.\n Temp Max: ' + tMax 
 							+ '°.\n Temp Min: ' + tMin + '°.\n';
+    winston.log('info', 'Ciudad encontrada', {'city': city});	
  }		
 };
 
@@ -47,8 +57,12 @@ bot.on('message', (msg) => {
   }); 
  } else if (msg.text.toString().toUpperCase() === start) {
   return request(url_p, (err, resp, body) => {
-   bot.sendMessage(msg.chat.id, 'Hola, escribe la ciudad para saber datos sobre el tiempo y clima.');
-  }); 
+   bot.sendMessage(msg.chat.id, 'Hola, escribe la ciudad para saber el tiempo y clima.', {
+	reply_markup: {keyboard: [[city_l], [city_p], [city_i]]
+	              }
+	});
+   });
+    winston.log('info', 'Start ejecutado', {'comando': start});	  
  } 
  else {
    city = msg.text.toString().toLowerCase();
@@ -57,12 +71,5 @@ bot.on('message', (msg) => {
    bot.sendMessage(msg.chat.id, 'Buscando datos para esta ciudad: ' + city + '\n' + prepareData(body));
   }); 
  }
- 
-bot.sendMessage(msg.chat.id, 'Hola, escribe la ciudad para saber el tiempo.', {
-  reply_markup: {
-    keyboard: [[trigger_l], [trigger_p]]
-   }
-  }
- );
 });
 
