@@ -1,12 +1,13 @@
 const Bot = require('node-telegram-bot-api');
 const request = require('request');
-const token = '580237724:AAERyEgRiPDyvd94jC0w8Raunh-VN-jK9UM';
+const token = require('./token');
+const token_w = require('./token_w');
+
 const city_l = 'Lima'
 const city_p = 'Pucallpa'
 var city = city_l
-const url_l = 'http://api.openweathermap.org/data/2.5/weather?q=Lima,pe&appid=d984cbfd84d45bbc2728315a888fb57c';
-const url_p = 'http://api.openweathermap.org/data/2.5/weather?q=Pucallpa,pe&appid=d984cbfd84d45bbc2728315a888fb57c';
-//const url = 'http://api.openweathermap.org/data/2.5/weather?q=' + city + '&appid=d984cbfd84d45bbc2728315a888fb57c';
+const url_l = 'http://api.openweathermap.org/data/2.5/weather?q=Lima,pe&appid=' + token_w;
+const url_p = 'http://api.openweathermap.org/data/2.5/weather?q=Pucallpa,pe&appid' + token_w;
 const trigger_l = 'LIMA';
 const trigger_p = 'PUCALLPA';
 const start = '/START';
@@ -51,7 +52,7 @@ bot.on('message', (msg) => {
  } 
  else {
    city = msg.text.toString().toLowerCase();
-   const url = 'http://api.openweathermap.org/data/2.5/weather?q=' + city + '&appid=d984cbfd84d45bbc2728315a888fb57c';
+   const url = 'http://api.openweathermap.org/data/2.5/weather?q=' + city + '&appid=' + token_w;
    return request(url, (err, resp, body) => {
    bot.sendMessage(msg.chat.id, 'Buscando datos para esta ciudad: ' + city + '\n' + prepareData(body));
   }); 
