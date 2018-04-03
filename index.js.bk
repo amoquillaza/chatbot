@@ -1,0 +1,42 @@
+const Bot = require('node-telegram-bot-api');
+const request = require('request');
+const token = '580237724:AAERyEgRiPDyvd94jC0w8Raunh-VN-jK9UM';
+const url = 'https://launchlibrary.net/1.3/launch';
+const trigger = 'I want to travel!';
+const mihermano = 'Mi hermano!';
+const total = 'Total';
+const bot = new Bot(token, {polling: true});
+const prepareData = (body) => {
+ const launches = JSON.parse(body).launches;
+ return launches.filter((launch) => launch !== undefined)
+  .map((launch) => `${launch.name} on ${launch.net}`)
+  .join('\n\n');
+};
+const prepareData2 = (body) => {
+ const launches = JSON.parse(body).launches;
+ const total = JSON.parse(body).total;
+ return total;
+};
+bot.on('message', (msg) => {
+ if (msg.text.toString() === trigger) {
+  return request(url, (err, resp, body) => {
+   bot.sendMessage(msg.chat.id, prepareData(body));
+  });
+ } else if (msg.text.toString() === total) {
+  return request(url, (err, resp, body) => {
+   bot.sendMessage(msg.chat.id, prepareData2(body));
+  }); 
+ } else {
+  return request(url, (err, resp, body) => {
+   bot.sendMessage(msg.chat.id, 'Habla mi hermano ' + msg.text.toString() + '!');
+  }); 
+ }
+
+bot.sendMessage(msg.chat.id, 'Hi, do you want to travel?', {
+  reply_markup: {
+    keyboard: [[trigger], [total], [mihermano]]
+   }
+  }
+ );
+});
+
