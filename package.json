@@ -1,0 +1,9 @@
+{
+  "name": "ElmithBot",
+  "version": "1.0.0",
+  "description": "Bot del tiempo y el clima",
+  "main": "chatbot.js",
+  "author": "amoquillaza",
+  "license": "MIT"
+}
+
