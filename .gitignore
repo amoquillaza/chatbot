@@ -7,10 +7,12 @@ lib-cov
 *.pid
 *.gz
 
-pids
-logs
-results
-build
+pids/
+logs/
+results/
+build/
 
-node_modules
+node_modules/
+jspm_packages/
+
 
