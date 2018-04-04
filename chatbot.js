@@ -13,8 +13,8 @@ const city_p = 'Pucallpa'
 const city_i = 'Ica'
 
 var city = city_l
-const url_l = 'http://api.openweathermap.org/data/2.5/weather?q=Lima,pe&appid=' + token_w;
-const url_p = 'http://api.openweathermap.org/data/2.5/weather?q=Pucallpa,pe&appid' + token_w;
+const url_l = 'http://api.openweathermap.org/data/2.5/weather?q=Lima,pe&appid=' + token_w + '&lang=es';
+const url_p = 'http://api.openweathermap.org/data/2.5/weather?q=Pucallpa,pe&appid' + token_w + '&lang=es';
 const trigger_l = 'LIMA';
 const trigger_p = 'PUCALLPA';
 const trigger_i = 'ICA';
@@ -29,6 +29,7 @@ const prepareData = (body) => {
  } else {
    const weather = JSON.parse(body).weather[0].main;
    const weather_d = JSON.parse(body).weather[0].description;
+
    const pres = JSON.parse(body).main.pressure;
    const hume = JSON.parse(body).main.humidity;
    var num = (JSON.parse(body).main.temp)-273;
@@ -37,11 +38,20 @@ const prepareData = (body) => {
    const tMax = parseFloat(num).toFixed(2);
    var num = (JSON.parse(body).main.temp_min)-273;
    const tMin = parseFloat(num).toFixed(2);
-   return ' El tiempo es: ' + '\n Tiempo: ' + weather
+
+   const nubosidad = JSON.parse(body).clouds.all;
+
+   const ciudad = JSON.parse(body).name;
+   const pais = JSON.parse(body).sys.country;
+   
+   return ' El tiempo es: ' + '\n Temp Max: ' + tMax + '°'
+							+ '\n Temp Min: ' + tMin + '°'
+                            + '\n Tiempo: ' + weather
                             + '\n Detalle: ' + weather_d 
-                            + '.\n Humedad: ' + hume 
-							+ '.\n Temp Max: ' + tMax 
-							+ '°.\n Temp Min: ' + tMin + '°.\n';
+                            + '\n Humedad: ' + hume + '%'
+                            + '\n Nubosidad: ' + nubosidad + '%'
+                            + '\n Lugar: ' + ciudad + ', ' + pais
+							+ '\n';
     winston.log('info', 'Ciudad encontrada', {'city': city});	
  }		
 };
