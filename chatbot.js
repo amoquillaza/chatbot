@@ -3,16 +3,16 @@ const request = require('request');
 const token = require('./token');
 const token_w = require('./token_w');
 //logging
-const winston = require('winston')
-winston.level = 'info'
+const winston = require('winston');
+winston.level = 'info';
 //winston.log('info', 'Hello log files!', {someKey: 'some-value'})
 //error,warn,info,verbose,debug,silly
 
-const city_l = 'Lima'
-const city_i = 'Ica'
+const city_l = 'Lima';
+const city_i = 'Ica';
 
-var city = city_l
-const url_w = 'http://api.openweathermap.org/data/2.5/weather?'
+var city = city_l;
+const url_w = 'http://api.openweathermap.org/data/2.5/weather?';
 const url_l = url_w + 'q=Lima,pe&appid=' + token_w + '&lang=es';
 const trigger_l = 'LIMA';
 const trigger_i = 'ICA';
@@ -60,6 +60,7 @@ const prepareData = (body) => {
 };
 
 bot.on('message', (msg) => {
+// se evalua el valor de msg.text
  if (msg.text.toString().toUpperCase() === trigger_l) {
   return request(url_l, (err, resp, body) => {
    bot.sendMessage(msg.chat.id, prepareData(body));
@@ -69,20 +70,25 @@ bot.on('message', (msg) => {
    const usuario = msg.from.username;
    return request(url_l, (err, resp, body) => {
    bot.sendMessage(msg.chat.id, 'Hola ' + usuario + ', escribe la ciudad para saber el tiempo y clima.', {
-//   bot.sendMessage(msg.chat.id, 'Hola , escribe la ciudad para saber el tiempo y clima.', {
 	reply_markup: {keyboard: [[city_l], [city_i]]
 	              }
 	});
    bot.sendSticker(msg.chat.id, sti_bruce);
    });
-    winston.log('info', 'Start ejecutado', {'comando': start});	  
- } 
- else {
+   winston.log('info', 'Start ejecutado', {'comando': start});	  
+ }
+// validar que solo se trabaja con textos 
+ else if (Object.prototype.toString.call(msg.text) === "[object String]") {
    city = msg.text.toString().toLowerCase();
    const url = url_w + 'q=' + city + '&appid=' + token_w + '&lang=es';
    return request(url, (err, resp, body) => {
    bot.sendMessage(msg.chat.id, 'Buscando datos para esta ciudad: ' + city + '\n' + prepareData(body));
   }); 
+ }
+ else {
+   return request(url_l, (err, resp, body) => {
+   bot.sendMessage(msg.chat.id, 'Ciudad incorrecta. Revise lo ingresado. ' + '\n');
+  });  
  }
 });
 
